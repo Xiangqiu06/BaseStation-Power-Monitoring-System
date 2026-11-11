@@ -1,0 +1,28 @@
+[Unit]
+Description=Base Station Backup Power Monitor
+Documentation=file:///opt/basestation/README.md
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/basestation
+ExecStart=/opt/basestation/bin/basestation -c /opt/basestation/config/sensor.conf
+Restart=on-failure
+RestartSec=5
+
+# 正常退出用 SIGTERM，程序里注册了 handler，会走完整回收流程
+KillSignal=SIGTERM
+TimeoutStopSec=15
+
+# 采集要读串口，落库要写 /var/lib
+User=root
+Group=root
+
+# 稍微收一下权限，程序只需要这几处
+ReadWritePaths=/var/lib/basestation /var/log/basestation
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
